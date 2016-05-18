@@ -1,4 +1,4 @@
-package simulacaoderoteamento;
+package dominio.entidades;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,9 +8,9 @@ import java.io.IOException;
  *
  * @author brunoccst
  */
-public class Rede {
+public class Network {
 
-    public Rede(String path) throws IOException {
+    public Network(String path) throws IOException {
 
         try (BufferedReader br = new BufferedReader(new FileReader("C:\\testing.txt"))) {
             String sCurrentLine;

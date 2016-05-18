@@ -1,4 +1,4 @@
-package simulacaoderoteamento;
+package dominio.entidades;
 
 /**
  *

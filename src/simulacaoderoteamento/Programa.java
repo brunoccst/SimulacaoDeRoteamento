@@ -1,10 +1,12 @@
 package simulacaoderoteamento;
 
+import dominio.entidades.Network;
+
 /**
  * @author brunoccst
  * @author matheuswanted
  */
-public class SimulacaoDeRoteamento {
+public class Programa {
 
     /**
      * @param args the command line arguments
@@ -12,7 +14,7 @@ public class SimulacaoDeRoteamento {
     public static void main(String[] args) {
         try
         {
-            Rede rede = new Rede(args[0]);
+            Network rede = new Network(args[0]);
             rede.SendMessage(args[1], args[2], args[3]);
         }
         catch (Exception e)
