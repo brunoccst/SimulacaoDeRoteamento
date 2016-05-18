@@ -1,14 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package simulacaoderoteamento;
 
 /**
- *
- * @author Bruno Carvalho da Costa
- * @author Matheus Silva dos Santos
+ * @author brunoccst
+ * @author matheuswanted
  */
 public class SimulacaoDeRoteamento {
 
@@ -16,7 +10,15 @@ public class SimulacaoDeRoteamento {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        try
+        {
+            Rede rede = new Rede(args[0]);
+            rede.SendMessage(args[1], args[2], args[3]);
+        }
+        catch (Exception e)
+        {
+            System.err.println("Ocorreu um erro ao executar o aplicativo.\n");
+            return;
+        }
     }
-    
 }
