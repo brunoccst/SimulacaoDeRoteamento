@@ -6,7 +6,7 @@ package dominio.entidades;
  */
 public class RouterTableRow {
 
-    private String name;
+    private String routerName;
     private String net_dest;
     private String next_hop;
     private int port;
@@ -15,18 +15,18 @@ public class RouterTableRow {
     }
 
     public RouterTableRow(String name, String net_dest, String next_hop, int port) {
-        this.name = name;
+        this.routerName = name;
         this.net_dest = net_dest;
         this.next_hop = next_hop;
         this.port = port;
     }
 
-    public String getName() {
-        return name;
+    public String getRouterName() {
+        return routerName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRouterName(String name) {
+        this.routerName = name;
     }
 
     public String getNet_dest() {

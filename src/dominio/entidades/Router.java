@@ -12,17 +12,17 @@ public class Router {
     
     private String name;
     private int num_ports;
-    private List<Node> node;
+    private List<Port> ports;
     private Map<String, RouterTableRow> routerTable;
 
     public Router() {
         routerTable = new TreeMap<>();
     }
 
-    public Router(String name, int num_ports, List<Node> node) {
+    public Router(String name, int num_ports, List<Port> ports) {
         this.name = name;
         this.num_ports = num_ports;
-        this.node = node;
+        this.ports = ports;
     }
 
     public String getName() {
@@ -41,14 +41,14 @@ public class Router {
         this.num_ports = num_ports;
     }
 
-    public List<Node> getNode() {
-        return node;
+    public List<Port> getPorts() {
+        return ports;
     }
 
-    public void setNode(List<Node> node) {
-        this.node = node;
+    public void setPorts(List<Port> ports) {
+        this.ports = ports;
     }
-
+    
     public Map<String, RouterTableRow> getRouterTable() {
         return routerTable;
     }
