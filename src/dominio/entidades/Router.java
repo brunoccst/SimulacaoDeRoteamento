@@ -20,6 +20,7 @@ public class Router {
     }
 
     public Router(String name, int num_ports, List<Port> ports) {
+        this();
         this.name = name;
         this.num_ports = num_ports;
         this.ports = ports;

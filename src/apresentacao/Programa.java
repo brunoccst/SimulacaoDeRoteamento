@@ -1,7 +1,8 @@
 package apresentacao;
 
 import dominio.entidades.Network;
-import dominio.entidades.NetworkFactory;
+import dominio.entidades.Topology;
+import dominio.entidades.TopologyFactory;
 import java.io.IOException;
 
 /**
@@ -13,31 +14,19 @@ public class Programa {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        try
-        {
+    public static void main(String[] args) throws IOException,Exception {
+        
+        //TODO: Add try catch
             String filePath = args[0];
-            
-            NetworkFactory netFactory = new NetworkFactory();
-            Network network = netFactory.CreateNetwork(filePath);
+            TopologyFactory topFactory = new TopologyFactory();
+            Topology topology = topFactory.CreateTopology(filePath);
             
             String origin = args[1];
             String destiny = args[2];
             String message = args[3];
             
-            network.SendMessage(origin, destiny, message);
+            topology.SendMessage(origin, destiny, message);
             
             System.out.println("Processo finalizado.\n");
-        }
-        catch (IOException e)
-        {
-            System.err.println("Ocorreu um erro ao importar os dados do arquivo.\n");
-            return;
-        }
-        catch (Exception e)
-        {
-            System.err.println("Ocorreu um erro ao executar o aplicativo.\n");
-            return;
-        }
     }
 }

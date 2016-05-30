@@ -10,6 +10,7 @@ public class Port {
     private String IP;
     private int MTU;
     private int portNumber;
+    private Network network;
 
     public Port()
     {
@@ -53,5 +54,9 @@ public class Port {
 
     public void setPortNumber(int portNumber) {
         this.portNumber = portNumber;
+    }
+
+    public void setNetwork(Network network) {
+        this.network = network;
     }
 }
