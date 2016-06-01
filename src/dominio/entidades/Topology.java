@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package dominio.entidades;
 
 import java.util.Map;
@@ -45,8 +40,11 @@ public class Topology {
         return networks.get(network);
     }   
     
-    
     public void SendMessage(String src, String dst, String msg) {
+        
+        Node srcNode = nodes.get(src);
+        
+        
         //TODO: Implement this method
         throw new NotImplementedException();
     }
