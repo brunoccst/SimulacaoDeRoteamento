@@ -1,62 +1,69 @@
 package dominio.entidades;
 
-import java.util.List;
+import dominio.entidades.requests.ARP;
+import dominio.entidades.requests.ICMP;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
+import utils.IntClass;
 
 /**
  *
  * @author brunoccst
  */
-public class Router {
+public class Router extends IMessageManager{
     
     private String name;
     private int num_ports;
-    private List<Port> ports;
+    private Map<IntClass,Port> ports;
     private Map<String, RouterTableRow> routerTable;
 
     public Router() {
         routerTable = new TreeMap<>();
+        ports = new TreeMap<>();
     }
 
-    public Router(String name, int num_ports, List<Port> ports) {
+    public Router(String name, int num_ports) {
         this();
         this.name = name;
         this.num_ports = num_ports;
-        this.ports = ports;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getNum_ports() {
         return num_ports;
     }
 
-    public void setNum_ports(int num_ports) {
-        this.num_ports = num_ports;
+    public Port getPort(int key) {
+        return this.ports.get(new IntClass(key));
     }
 
-    public List<Port> getPorts() {
-        return ports;
-    }
-
-    public void setPorts(List<Port> ports) {
-        this.ports = ports;
-    }
-    
-    public Map<String, RouterTableRow> getRouterTable() {
-        return routerTable;
+    public void addPort(Port port) {
+        this.ports.put(new IntClass(port.getPortNumber()), port);
     }
     
     public void AddRouterTableEntry(RouterTableRow newEntry)
     {
         routerTable.put(newEntry.getNet_dest(), newEntry);
     }
+
+    @Override
+    protected void Receive(ARP message) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    protected void Receive(ICMP message) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    Collection<Port> getPortsList() {
+        return this.ports.values();
+    }
+
     
 }

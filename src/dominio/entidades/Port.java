@@ -11,6 +11,15 @@ public class Port {
     private int MTU;
     private int portNumber;
     private Network network;
+    private Router router;
+
+    public Network getNetwork() {
+        return network;
+    }
+
+    public Router getRouter() {
+        return router;
+    }
 
     public Port()
     {

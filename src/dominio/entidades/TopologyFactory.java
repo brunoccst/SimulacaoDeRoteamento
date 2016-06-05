@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  *
@@ -63,7 +60,7 @@ public class TopologyFactory {
         //If network doesn't exists, create it
         if (network == null) {
 
-            network = new Network(networkIP);
+            network = new Network(networkIP, node.getMTU());
             top.AddNetwork(network);
         }
 
@@ -71,9 +68,10 @@ public class TopologyFactory {
     }
 
     private void AddRouterToNetwork(Router router, Topology top) {
-        String networkIP;
-        for (Port port : router.getPorts()) {
-            
+        
+        router.getPortsList().forEach((port)->
+        {
+            String networkIP;
             //Get the network by the translated port IP
             networkIP = TranslateIP(port.getIP());
             Network network = top.GetNetwork(networkIP);
@@ -81,20 +79,20 @@ public class TopologyFactory {
             //If network doesn't exists, create it
             if (network == null) {
 
-                network = new Network(networkIP);
+                network = new Network(networkIP, port.getMTU());
                 top.AddNetwork(network);
             }
-            
+
             //Add cross-reference of networks and ports
             network.AddPort(port);
             port.setNetwork(network);
-        }
+        });
 
     }
 
     private Node CreateNode(String nodeString) {
         String[] split = nodeString.split(",");
-        Node node = new Node(split[0], split[1], split[2], split[3], split[4]);
+        Node node = new Node(split[0], split[1], split[2], Integer.parseInt(split[3]), split[4]);
         return node;
     }
 
@@ -108,23 +106,18 @@ public class TopologyFactory {
         if ((num_ports * 3) != (split.length - 2)) {
             throw new Exception("Number of ports is different from the passed ones.");
         }
+        Router router = new Router(name, num_ports);
 
-        ArrayList<Port> portList = new ArrayList<>();
-
-        int portNumber = 1;
-
+        int portNumber = 0,mtu;
+        String mac, ip;
         for (int i = 2; i < split.length; i += 3) {
-            String mac = split[i];
-            String ip = split[i + 1];
-            int mtu = Integer.parseInt(split[i + 2]);
+            mac = split[i];
+            ip = split[i + 1];
+            mtu = Integer.parseInt(split[i + 2]);
 
-            Port newPort = new Port(mac, ip, mtu, portNumber);
-            portList.add(newPort);
-
-            portNumber++;
+            router.addPort(new Port(mac, ip, mtu, portNumber));
         }
 
-        Router router = new Router(name, num_ports, portList);
         return router;
     }
 

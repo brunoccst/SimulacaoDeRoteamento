@@ -1,13 +1,17 @@
 package dominio.entidades;
 
+import dominio.entidades.requests.ARP;
+import dominio.entidades.requests.ICMP;
+import dominio.entidades.requests.MessageType;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /**
  *
  * @author brunoccst
  */
-public class Network {
+public class Network extends IMessageManager{
     
     private Map<String, Node> nodes;
     private Map<String, Port> ports;
@@ -60,4 +64,24 @@ public class Network {
     {
         
     }
+    @Override
+    protected void Receive(ARP message){
+        if(message.getMsgType() == MessageType.Reply){
+            Port port;
+            Node node = nodes.get(message.getDestIP());
+            if(node == null){
+                port = ports.get(message.getDestIP());
+                port.getRouter().Receive(message);
+            }
+            else
+                node.Receive(message);
+        }
+        else{
+            Optional<Node> nodeAux = nodes.values().stream().filter(node -> node.getIP().equals(message.getDestIP())).findFirst();
+            if(nodeAux.isPresent())
+                nodeAux.get().Receive(message);
+        }
+    }
+    @Override
+    protected void Receive(ICMP message){}
 }

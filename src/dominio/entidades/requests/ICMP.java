@@ -9,51 +9,33 @@ package dominio.entidades.requests;
  *
  * @author 14104872
  */
-public class ICMP {
+public class ICMP extends Message{
 
     private final String ICMPEchoRequestReply = "{0} => {1} : ICMP - Echo (ping) {6} (src={2} dst={3} ttl={4} data={5});";
     private final String ICMPEchoProcess = "{0} rbox {0} : Received {1};";
 
-    private String sourceName;
-    private String sourceIP;
-    private String destName;
-    private String destIP;
     private int TTL;
     private String data;
-    private MessageType msgType;
 
     public ICMP(String sourceName, String sourceIP, String destName, String destIP, int TTL, String data, MessageType msgType) {
-        this.sourceName = sourceName;
-        this.sourceIP = sourceIP;
-        this.destName = destName;
-        this.destIP = destIP;
+        super(sourceName,sourceIP,destName,destIP,msgType);
         this.TTL = TTL;
         this.data = data;
         this.msgType = msgType;
     }
 
-    public String getSourceName() {
-        return sourceName;
-    }
-
-    public String getSourceIP() {
-        return sourceIP;
-    }
-
-    public String getDestName() {
-        return destName;
-    }
-
-    public String getDestIP() {
-        return destIP;
-    }
-
     public int getTTL() {
         return TTL;
+    }
+    public void setTTL(int TTL) {
+        this.TTL = TTL;
     }
 
     public String getData() {
         return data;
+    }
+    public void setData(String data) {
+        this.data = data;
     }
 
     public void invertSourceDest() {

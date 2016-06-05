@@ -4,49 +4,29 @@ package dominio.entidades.requests;
  *
  * @author 14104872
  */
-public class ARP {
+public class ARP extends Message {
     
     private final String ArpRequest = "{0} box {0} : ARP - Who has {1}? Tell {2};";
     private final String ArpReply = "{0} => {1} : ARP - {2} is at {3};";
     
-    private String sourceName;
-    private String sourceIP;
     private String sourceMAC;
-    private String destName;
-    private String destIP;
-    private MessageType msgType;
 
-    public ARP(String sourceName, String sourceIP, String sourceMAC, String destName, String destIP, MessageType msgType) {
-        this.sourceName = sourceName;
-        this.sourceIP = sourceIP;
-        this.destIP = destIP;
-        this.msgType = msgType;
-        this.destName = destName;
-        this.sourceMAC = sourceMAC;
-    }
-
-    public String getSourceName() {
-        return sourceName;
-    }
-
-    public String getSourceIP() {
-        return sourceIP;
-    }
-
-    public String getDestIP() {
-        return destIP;
-    }
-
-    public MessageType getMsgType() {
-        return msgType;
-    }
-
-    public String getDestName() {
-        return destName;
+    public ARP(String sourceName, String sourceIP, String destIP, MessageType msgType) {
+        super(sourceName,sourceIP,destIP,msgType);
     }
 
     public String getSourceMAC() {
         return sourceMAC;
+    }
+    
+    public void Reply(String sourceName,String sourceMAC){
+        String aux = sourceIP;
+        this.sourceIP = destIP;
+        this.sourceMAC = sourceMAC;
+        this.sourceName = sourceName;
+        this.destName = this.sourceName;
+        this.destIP = aux;
+        this.msgType = MessageType.Reply;
     }
     
     @Override

@@ -29,7 +29,7 @@ public class NetworkTest {
     
     @Before
     public void setUp() {
-        network = new Network("192.168.0.1");
+        network = new Network("192.168.0.1",5);
     }
     
     @After
@@ -38,7 +38,7 @@ public class NetworkTest {
 
     @Test
     public void TestAddNode() {
-        Node node = new Node("n1","00:00:00:00:00:01","192.168.0.2","5","192.168.0.1");
+        Node node = new Node("n1","00:00:00:00:00:01","192.168.0.2",5,"192.168.0.1");
         network.AddNode(node);
         Node searchedNode = network.GetNode(node.getName());
         
