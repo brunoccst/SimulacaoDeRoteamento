@@ -54,7 +54,7 @@ public class TopologyFactory {
     }
 
     private void AddNodeToNetwork(Node node, Topology top) {
-        String networkIP = TranslateIP(node.getIP());
+        String networkIP = Router.TranslateIP(node.getIP());
         Network network = top.GetNetwork(networkIP);
 
         //If network doesn't exists, create it
@@ -73,7 +73,7 @@ public class TopologyFactory {
         {
             String networkIP;
             //Get the network by the translated port IP
-            networkIP = TranslateIP(port.getIP());
+            networkIP = Router.TranslateIP(port.getIP());
             Network network = top.GetNetwork(networkIP);
 
             //If network doesn't exists, create it
@@ -115,6 +115,10 @@ public class TopologyFactory {
             ip = split[i + 1];
             mtu = Integer.parseInt(split[i + 2]);
 
+            System.out.println("MAC: " + mac);
+            System.out.println("IP: " + ip);
+            System.out.println("MTO: " + mtu);
+            System.out.println("Port Number: " + portNumber);
             router.addPort(new Port(mac, ip, mtu, portNumber));
         }
 
@@ -132,22 +136,5 @@ public class TopologyFactory {
         RouterTableRow rtr = new RouterTableRow(routerName, net_dest, nexthop, port);
 
         return rtr;
-    }
-
-    private String TranslateIP(String ip) {
-        //TODO: Check why the split isn't working
-        String[] splitted = ip.split(".");
-
-        int firstPart = Integer.parseInt(splitted[0]);
-        if (firstPart <= 127) {
-            //Classe A
-            return splitted[0] + ".0.0.0";
-        } else if (firstPart <= 191) {
-            //Classe B
-            return splitted[0] + splitted[1] + ".0.0";
-        } else {
-            //Classe C
-            return splitted[0] + splitted[1] + splitted[2] + ".0";
-        }
     }
 }

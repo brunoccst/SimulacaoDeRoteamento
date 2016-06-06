@@ -9,7 +9,8 @@ package utils;
  *
  * @author Matheus
  */
-public class IntClass {
+public class IntClass implements Comparable {
+
     int value;
 
     public IntClass(int value) {
@@ -39,8 +40,14 @@ public class IntClass {
         }
         return true;
     }
-    public boolean equals(int value){
+
+    public boolean equals(int value) {
         return this.value == value;
     }
-    
+
+    @Override
+    public int compareTo(Object o) {
+        return equals(((IntClass) o).value) ? 1 : 0;
+    }
+
 }

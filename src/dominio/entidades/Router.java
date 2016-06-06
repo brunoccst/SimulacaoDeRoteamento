@@ -73,5 +73,20 @@ public class Router extends IMessageManager {
     Collection<Port> getPortsList() {
         return this.ports.values();
     }
+    
+    public static String TranslateIP(String ip) {
+        String[] splitted = ip.split("\\.");
 
+        int firstPart = Integer.parseInt(splitted[0]);
+        if (firstPart <= 127) {
+            //Classe A
+            return splitted[0] + ".0.0.0";
+        } else if (firstPart <= 191) {
+            //Classe B
+            return splitted[0] + splitted[1] + ".0.0";
+        } else {
+            //Classe C
+            return splitted[0] + splitted[1] + splitted[2] + ".0";
+        }
+    }
 }
