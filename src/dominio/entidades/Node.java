@@ -87,7 +87,7 @@ public class Node extends IMessageManager {
     }
 
     public void Send(String dest) {
-        network.Receive(new ARP(this.name, this.IP, dest, MessageType.Request));
+        network.Receive(new ARP(this.name, this.IP, dest, MessageType.Request),"");
 
     }
     public void ReturnError(int code){
@@ -112,7 +112,7 @@ public class Node extends IMessageManager {
             
             else 
                 nextMessage = null;
-            network.Receive(messageToSend);
+            network.Receive(messageToSend, "");
             if (errorCode == -1)
                 break;
         }
@@ -123,7 +123,7 @@ public class Node extends IMessageManager {
     }
 
     @Override
-    protected void Receive(ARP message) {
+    protected void Receive(ARP message, String gatewayDefault) {
         if (message.getMsgType() == MessageType.Reply){
             lastArp = message;
             Send(DEFAULT_TTL);
@@ -134,11 +134,11 @@ public class Node extends IMessageManager {
                 reply.Reply(this.name, this.MAC);
             else
                 reply = null;
-            network.Receive(reply);
+            network.Receive(reply, gatewayDefault);
         }
     }
 
     @Override
-    protected void Receive(ICMP message) {
+    protected void Receive(ICMP message, String gatewayDefault) {
     }
 }

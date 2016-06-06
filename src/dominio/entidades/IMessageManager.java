@@ -13,12 +13,12 @@ import dominio.entidades.requests.*;
  */
 public abstract class IMessageManager {
     
-    public void Receive(Message message){
+    public void Receive(Message message, String gatewayDefault){
         if(message instanceof ARP)
-            Receive((ARP)message);
+            Receive((ARP)message,gatewayDefault);
         else
-            Receive((ICMP)message);
+            Receive((ICMP)message,gatewayDefault);
     }
-    protected abstract void Receive(ARP message);
-    protected abstract void Receive(ICMP message);
+    protected abstract void Receive(ARP message, String gatewayDefault);
+    protected abstract void Receive(ICMP message, String gatewayDefault);
 }

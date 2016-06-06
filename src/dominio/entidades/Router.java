@@ -2,6 +2,7 @@ package dominio.entidades;
 
 import dominio.entidades.requests.ARP;
 import dominio.entidades.requests.ICMP;
+import dominio.entidades.requests.MessageType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -12,11 +13,11 @@ import utils.IntClass;
  *
  * @author brunoccst
  */
-public class Router extends IMessageManager{
-    
+public class Router extends IMessageManager {
+
     private String name;
     private int num_ports;
-    private Map<IntClass,Port> ports;
+    private Map<IntClass, Port> ports;
     private Map<String, RouterTableRow> routerTable;
 
     public Router() {
@@ -45,19 +46,27 @@ public class Router extends IMessageManager{
     public void addPort(Port port) {
         this.ports.put(new IntClass(port.getPortNumber()), port);
     }
-    
-    public void AddRouterTableEntry(RouterTableRow newEntry)
-    {
+
+    public void AddRouterTableEntry(RouterTableRow newEntry) {
         routerTable.put(newEntry.getNet_dest(), newEntry);
     }
 
     @Override
-    protected void Receive(ARP message) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected void Receive(ARP message, String defaultGateway) {
+        if (message.getMsgType() == MessageType.Request) {
+            RouterTableRow row = routerTable.get(TranslateIP(message.getDestIP()));
+            if (row == null) {
+                row = routerTable.get("0.0.0.0");
+            }
+            if(row!= null)
+            {
+                ports.get(new IntClass(row.getPort())).getNetwork().Receive(message,"");
+            }
+        }
     }
 
     @Override
-    protected void Receive(ICMP message) {
+    protected void Receive(ICMP message, String defaultGateway) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -65,5 +74,4 @@ public class Router extends IMessageManager{
         return this.ports.values();
     }
 
-    
 }
