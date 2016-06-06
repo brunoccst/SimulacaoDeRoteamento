@@ -82,6 +82,7 @@ public class Router extends IMessageManager {
             //Classe A
             return splitted[0] + ".0.0.0";
         } else if (firstPart <= 191) {
+            
             //Classe B
             return splitted[0] + splitted[1] + ".0.0";
         } else {
