@@ -3,7 +3,6 @@ package dominio.entidades;
 import dominio.entidades.requests.ARP;
 import dominio.entidades.requests.ICMP;
 import dominio.entidades.requests.MessageType;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,20 +52,16 @@ public class Router extends IMessageManager {
 
     @Override
     protected void Receive(ARP message, String defaultGateway) {
-        if (message.getMsgType() == MessageType.Request) {
             RouterTableRow row = routerTable.get(TranslateIP(message.getDestIP()));
-            if (row == null) {
-                row = routerTable.get("0.0.0.0");
-            }
-            if(row!= null)
-            {
-                ports.get(new IntClass(row.getPort())).getNetwork().Receive(message,"");
-            }
-        }
+            Port portAux = ports.get(new IntClass(row.getPort()));
+            message.Reply(this.name, portAux.getMAC());
+            portAux.getNetwork().Receive(message, "");
     }
 
     @Override
     protected void Receive(ICMP message, String defaultGateway) {
+        //SEND ARP
+        //SEND ICMP
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
