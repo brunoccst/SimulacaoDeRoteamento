@@ -16,14 +16,28 @@ public class ICMP extends Message{
 
     private int TTL;
     private String data;
+    private boolean isFinal;
 
     public ICMP(String sourceName, String sourceIP, String destName, String destIP, int TTL, String data, MessageType msgType) {
         super(sourceName,sourceIP,destName,destIP,msgType);
         this.TTL = TTL;
         this.data = data;
         this.msgType = msgType;
+        this.isFinal = false;
     }
-
+    
+    public boolean isFinal(){
+        return isFinal;
+    }
+    
+    public void setFinal(){
+        isFinal = true;
+    }
+    
+    public void setNotFinal(){
+        isFinal = false;
+    }
+            
     public int getTTL() {
         return TTL;
     }

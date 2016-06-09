@@ -17,6 +17,9 @@ public class Network extends IMessageManager {
     private Map<String, Port> ports;
     private int MTU;
     private String IP;
+    private Node nodeCache;
+    private Port portCache;
+    private String lastSender;
 
     public Network(String ip, int mtu) {
         this.IP = ip;
@@ -62,32 +65,92 @@ public class Network extends IMessageManager {
     }
 
     @Override
-    protected void Receive(ARP message, String gatewayDefault) {
+    protected void Receive(ARP message, String gatewayDefault, String sender) {
         if (message.getMsgType() == MessageType.Reply) {
             Port port;
             Node node = nodes.get(message.getDestIP());
             if (node == null) {
                 port = ports.get(message.getDestIP());
-                port.getRouter().Receive(message,"");
+                port.getRouter().Receive(message, "", "");
             } else {
-                node.Receive(message,"");
+                node.Receive(message, "", "");
             }
         } else {
-            Optional<Node> nodeAux = nodes.values().stream().filter(node -> node.getIP().equals(message.getDestIP())).findFirst();
-            if (nodeAux.isPresent()) {
-                nodeAux.get().Receive(message,"");
-            } else {
+            try{
+            Node node = nodes.get(message.getDestIP());
+            if (node == null) {
                 Port portAux;
-                if(!gatewayDefault.equals(""))
+                //RECEBENDO ARP DE UM NODO
+                if (!gatewayDefault.equals("")) {
                     portAux = ports.values().stream().filter(port -> port.getIP().equals(gatewayDefault)).findFirst().get();
-                else
-                    portAux = ports.values().stream().filter(port -> !port.getIP().equals(message.getDestIP())).findFirst().get();
-                portAux.getRouter().Receive(message,"");
+                } 
+                else {
+                    //RECEBENDO ARP DE UM ROUTER
+                    portAux = ports.values().stream().filter(port -> !port.getIP().equals(message.getSourceIP())).findFirst().get();
+                }
+                
+                portAux.getRouter().Receive(message, "", portAux.getPortNumber() + "");
+            } else {
+                node.Receive(message, "", "");
+            }
+            }catch(Exception e){
+                lastSender = sender;
+                ReturnError(NOT_FOUND_HOST);
             }
         }
     }
 
+    protected void loadCacheWithMac(String MAC) {
+        if (nodeCache == null && portCache == null) {
+            Optional<Node> optional = nodes.values().stream().filter(node -> node.getMAC().equals(MAC)).findFirst();
+            if (optional.isPresent()) {
+                nodeCache = optional.get();
+            } else {
+                portCache = ports.values().stream().filter(port -> !port.getMAC().equals(MAC)).findFirst().get();
+            }
+        }
+
+    }
+
+    protected void clearCache() {
+        nodeCache = null;
+        portCache = null;
+    }
     @Override
-    protected void Receive(ICMP message, String gatewayDefault) {
+    public void ReturnError(int code) {
+        clearCache();
+        loadCacheWithMac(lastSender);
+        if(nodeCache == null)
+            portCache.getRouter().ReturnError(code);
+        else
+            nodeCache.ReturnError(code);
+
+    }
+
+    @Override
+    protected void Receive(ICMP message, String gatewayDefault, String sender) {
+        loadCacheWithMac(gatewayDefault);
+        Node nodeAux = nodeCache;
+        Port portAux = portCache;
+        if (message.getMsgType() == MessageType.Request) {
+            if (nodeAux != null) {
+                nodeAux.Receive(message, "", sender);
+            } else {
+                portAux.getRouter().Receive(message, "", portAux.getPortNumber() + "");
+            }
+
+            if (message.isFinal()) {
+                clearCache();
+                loadCacheWithMac(sender);
+            }
+
+        } else {
+            lastSender = sender;
+            if (nodeAux != null) {
+                nodeAux.Receive(message, "", "");
+            } else {
+                portAux.getRouter().Receive(message, "", "");
+            }
+        }
     }
 }

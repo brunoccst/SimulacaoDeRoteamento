@@ -12,13 +12,23 @@ import dominio.entidades.requests.*;
  * @author Matheus
  */
 public abstract class IMessageManager {
-    
-    public void Receive(Message message, String gatewayDefault){
+    public int errorCode;
+    protected static final int TIME_EXCEEDED_CODE = -1;
+    protected static final int NOT_FOUND_HOST = -2;
+    protected static final int NOT_FOUND_NEXT_HOP = -3;
+    public void Receive(Message message, String gatewayDefault, String sender){
         if(message instanceof ARP)
-            Receive((ARP)message,gatewayDefault);
+            Receive((ARP)message,gatewayDefault,sender);
         else
-            Receive((ICMP)message,gatewayDefault);
+            Receive((ICMP)message,gatewayDefault,sender);
     }
-    protected abstract void Receive(ARP message, String gatewayDefault);
-    protected abstract void Receive(ICMP message, String gatewayDefault);
+    
+    public void ReturnError(int code){
+        this.errorCode = code;
+    }
+    protected void ResetErrorCode(){
+        this.errorCode = 0;
+    }
+    protected abstract void Receive(ARP message, String gatewayDefault, String sender);
+    protected abstract void Receive(ICMP message, String gatewayDefault, String sender);
 }

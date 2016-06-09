@@ -43,10 +43,10 @@ public class Topology {
     public void SendMessage(String src, String dst, String msg) {
         
         Node srcNode = nodes.get(src);
-        
+        srcNode.SendMessageToNetwork(msg, dst);
         
         //TODO: Implement this method
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
     
 }

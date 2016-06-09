@@ -9,6 +9,7 @@ import dominio.entidades.requests.*;
 public class Node extends IMessageManager {
 
     private final static int DEFAULT_TTL = 8;
+    private int lastTTL;
     private String name;
     private String MAC;
     private String IP;
@@ -18,8 +19,8 @@ public class Node extends IMessageManager {
 
     private String lastMessage;
     private ARP lastArp;
-    private int errorCode;
-
+    
+    private boolean sending;
     public Node() {
 
     }
@@ -87,46 +88,52 @@ public class Node extends IMessageManager {
     }
 
     public void Send(String dest) {
-        network.Receive(new ARP(this.name, this.IP, dest, MessageType.Request),"");
+        network.Receive(new ARP(this.name, this.IP, dest, MessageType.Request),gateway,this.MAC);
 
     }
+    
+    @Override
     public void ReturnError(int code){
-        this.errorCode = code;
-    }
-    private void ResetErrorCode(){
-        this.errorCode = 0;
+        super.ReturnError(code);
+        if(!sending){
+            ResetErrorCode();
+            Send(lastTTL *= 2);
+        }
     }
     private void Send(int TTL) {
-        int mtu = network.getMTU();
         ICMP originalICMP = new ICMP(this.name, this.IP, lastArp.getDestName(), lastArp.getSourceIP(), TTL, lastMessage, MessageType.Request),
                 nextMessage = originalICMP,
                 messageToSend;
-        
+        sending = true;
         //SEND ICMP IN PACKAGES
         while (nextMessage != null) {
             messageToSend = (ICMP) nextMessage.Clone();
             if (nextMessage.getData().length() > MTU) {
-                messageToSend.setData(nextMessage.getData().substring(0, mtu));
-                nextMessage.setData(nextMessage.getData().substring(mtu));
+                messageToSend.setData(nextMessage.getData().substring(0, MTU));
+                nextMessage.setData(nextMessage.getData().substring(MTU));
             } 
             
-            else 
+            else {
                 nextMessage = null;
-            network.Receive(messageToSend, "");
+                messageToSend.setFinal();
+            }
+            network.Receive(messageToSend, lastArp.getSourceMAC(),this.MAC);
             if (errorCode == -1)
                 break;
         }
         if (errorCode == -1) {
             ResetErrorCode();
-            Send(TTL * 2);
+            Send(lastTTL = TTL * 2);
         }
+        else
+            sending = false;
     }
 
     @Override
-    protected void Receive(ARP message, String gatewayDefault) {
+    protected void Receive(ARP message, String gatewayDefault, String sender) {
         if (message.getMsgType() == MessageType.Reply){
             lastArp = message;
-            Send(DEFAULT_TTL);
+            Send(lastTTL = DEFAULT_TTL);
         }
         else {
             ARP reply = message;
@@ -134,11 +141,11 @@ public class Node extends IMessageManager {
                 reply.Reply(this.name, this.MAC);
             else
                 reply = null;
-            network.Receive(reply, gatewayDefault);
+            network.Receive(reply, gatewayDefault,this.MAC);
         }
     }
 
     @Override
-    protected void Receive(ICMP message, String gatewayDefault) {
+    protected void Receive(ICMP message, String gatewayDefault, String sender) {
     }
 }
