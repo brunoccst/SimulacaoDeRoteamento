@@ -2,7 +2,6 @@ package dominio.entidades;
 
 import java.util.Map;
 import java.util.TreeMap;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
@@ -43,7 +42,7 @@ public class Topology {
     public void SendMessage(String src, String dst, String msg) {
         
         Node srcNode = nodes.get(src);
-        srcNode.SendMessageToNetwork(msg, dst);
+        srcNode.SendMessageToNetwork(msg, nodes.get(dst).getIP());
         
         //TODO: Implement this method
         //throw new NotImplementedException();

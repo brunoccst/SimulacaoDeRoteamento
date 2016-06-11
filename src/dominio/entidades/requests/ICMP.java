@@ -11,8 +11,8 @@ package dominio.entidades.requests;
  */
 public class ICMP extends Message{
 
-    private final String ICMPEchoRequestReply = "{0} => {1} : ICMP - Echo (ping) {6} (src={2} dst={3} ttl={4} data={5});";
-    private final String ICMPEchoProcess = "{0} rbox {0} : Received {1};";
+    private final String ICMPEchoRequestReply = "%1$s => %2$s : ICMP - Echo (ping) %7$s (src=%3$s dst=%4$s ttl=%5$s data=%6$s);";
+    private final String ICMPEchoProcess = "%1$s rbox %1$s : Received %2$s;";
 
     private int TTL;
     private String data;
@@ -63,7 +63,7 @@ public class ICMP extends Message{
     }
 
     public String processOnNode(String node) {
-        return String.format(ICMPEchoProcess, node);
+        return String.format(ICMPEchoProcess, node,data);
     }
 
     @Override

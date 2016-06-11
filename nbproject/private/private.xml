@@ -6,13 +6,8 @@
             <file>file:/C:/Users/Matheus/Desktop/redes/SimulacaoDeRoteamento/src/dominio/entidades/Router.java</file>
             <file>file:/C:/Users/Matheus/Desktop/redes/SimulacaoDeRoteamento/src/dominio/entidades/TopologyFactory.java</file>
             <file>file:/C:/Users/Matheus/Desktop/redes/SimulacaoDeRoteamento/src/dominio/entidades/Node.java</file>
-            <file>file:/C:/Users/Matheus/Desktop/redes/SimulacaoDeRoteamento/src/dominio/entidades/requests/Message.java</file>
-            <file>file:/C:/Users/Matheus/Desktop/redes/SimulacaoDeRoteamento/src/dominio/entidades/requests/ICMP.java</file>
             <file>file:/C:/Users/Matheus/Desktop/redes/SimulacaoDeRoteamento/src/dominio/entidades/requests/ARP.java</file>
-            <file>file:/C:/Users/Matheus/Desktop/redes/SimulacaoDeRoteamento/test/NetworkTest.java</file>
             <file>file:/C:/Users/Matheus/Desktop/redes/SimulacaoDeRoteamento/src/dominio/entidades/Network.java</file>
-            <file>file:/C:/Users/Matheus/Desktop/redes/SimulacaoDeRoteamento/src/dominio/entidades/IMessageManager.java</file>
-            <file>file:/C:/Users/Matheus/Desktop/redes/SimulacaoDeRoteamento/src/dominio/entidades/Port.java</file>
         </group>
     </open-files>
 </project-private>

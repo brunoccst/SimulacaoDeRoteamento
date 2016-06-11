@@ -6,11 +6,11 @@ package dominio.entidades.requests;
  */
 public class ARP extends Message {
     
-    private final String ArpRequest = "{0} box {0} : ARP - Who has {1}? Tell {2};";
-    private final String ArpReply = "{0} => {1} : ARP - {2} is at {3};";
+    private final String ArpRequest = "%1$s box %1$s : ARP - Who has %2$s? Tell %3$s;";
+    private final String ArpReply = "%1$s => %2$s : ARP - %3$s is at %4$s;";
     
     private String sourceMAC;
-
+    private Boolean answered = false;
     public ARP(String sourceName, String sourceIP, String destIP, MessageType msgType) {
         super(sourceName,sourceIP,destIP,msgType);
     }
@@ -23,8 +23,8 @@ public class ARP extends Message {
         String aux = sourceIP;
         this.sourceIP = destIP;
         this.sourceMAC = sourceMAC;
-        this.sourceName = sourceName;
         this.destName = this.sourceName;
+        this.sourceName = sourceName;
         this.destIP = aux;
         this.msgType = MessageType.Reply;
     }

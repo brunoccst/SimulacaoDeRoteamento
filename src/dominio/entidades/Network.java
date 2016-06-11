@@ -45,7 +45,7 @@ public class Network extends IMessageManager {
     }
 
     public void AddNode(Node node) {
-        nodes.put(node.getName(), node);
+        nodes.put(node.getIP(), node);
     }
 
     public Node GetNode(String nodeName) {
@@ -83,13 +83,16 @@ public class Network extends IMessageManager {
                 //RECEBENDO ARP DE UM NODO
                 if (!gatewayDefault.equals("")) {
                     portAux = ports.values().stream().filter(port -> port.getIP().equals(gatewayDefault)).findFirst().get();
+                    portAux.getRouter().Receive(message, "", portAux.getPortNumber() + "");
                 } 
                 else {
                     //RECEBENDO ARP DE UM ROUTER
-                    portAux = ports.values().stream().filter(port -> !port.getIP().equals(message.getSourceIP())).findFirst().get();
+                    ports.values().forEach((port)->{
+                        if(port.getIP().equals(message.getSourceIP()) && message.getMsgType() == MessageType.Request)
+                            port.getRouter().Receive(message, "", port.getPortNumber() + "");
+                    });
                 }
                 
-                portAux.getRouter().Receive(message, "", portAux.getPortNumber() + "");
             } else {
                 node.Receive(message, "", "");
             }
@@ -106,7 +109,7 @@ public class Network extends IMessageManager {
             if (optional.isPresent()) {
                 nodeCache = optional.get();
             } else {
-                portCache = ports.values().stream().filter(port -> !port.getMAC().equals(MAC)).findFirst().get();
+                portCache = ports.values().stream().filter(port -> port.getMAC().equals(MAC) ).findFirst().get();
             }
         }
 
@@ -132,16 +135,15 @@ public class Network extends IMessageManager {
         loadCacheWithMac(gatewayDefault);
         Node nodeAux = nodeCache;
         Port portAux = portCache;
-        if (message.getMsgType() == MessageType.Request) {
+        if ( message.getMsgType() == MessageType.Request) {
+            if (message.isFinal()) {
+                clearCache();
+                loadCacheWithMac(sender);
+            }
             if (nodeAux != null) {
                 nodeAux.Receive(message, "", sender);
             } else {
                 portAux.getRouter().Receive(message, "", portAux.getPortNumber() + "");
-            }
-
-            if (message.isFinal()) {
-                clearCache();
-                loadCacheWithMac(sender);
             }
 
         } else {

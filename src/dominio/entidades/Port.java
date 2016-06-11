@@ -32,7 +32,9 @@ public class Port {
         this.MTU = MTU;
         this.portNumber = portNumber;
     }
-
+    public void setRouter(Router router){
+        this.router = router;
+    }
     public String getMAC() {
         return MAC;
     }

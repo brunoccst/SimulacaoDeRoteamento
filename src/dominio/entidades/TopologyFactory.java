@@ -3,7 +3,6 @@ package dominio.entidades;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  *
@@ -63,7 +62,7 @@ public class TopologyFactory {
             network = new Network(networkIP, node.getMTU());
             top.AddNetwork(network);
         }
-
+        node.setNetwork(network);
         network.AddNode(node);
     }
 
@@ -119,7 +118,10 @@ public class TopologyFactory {
             System.out.println("IP: " + ip);
             System.out.println("MTO: " + mtu);
             System.out.println("Port Number: " + portNumber);
-            router.addPort(new Port(mac, ip, mtu, portNumber));
+             Port aux = new Port(mac, ip, mtu, portNumber);
+            router.addPort(aux);
+            aux.setRouter(router);
+            portNumber++;
         }
 
         return router;

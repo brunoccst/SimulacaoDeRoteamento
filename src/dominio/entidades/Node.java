@@ -18,9 +18,12 @@ public class Node extends IMessageManager {
     private Network network;
 
     private String lastMessage;
-    private ARP lastArp;
-    
+    private String messageBuffer;
+    private String destName, destIP, lastSender;
+    private MessageType type;
+
     private boolean sending;
+
     public Node() {
 
     }
@@ -31,6 +34,8 @@ public class Node extends IMessageManager {
         this.IP = IP;
         this.gateway = gateway;
         this.MTU = MTU;
+        messageBuffer = "";
+        type = MessageType.Request;
     }
 
     public int getMTU() {
@@ -88,20 +93,23 @@ public class Node extends IMessageManager {
     }
 
     public void Send(String dest) {
-        network.Receive(new ARP(this.name, this.IP, dest, MessageType.Request),gateway,this.MAC);
+        ARP message = new ARP(this.name, this.IP, dest, MessageType.Request);
+        System.out.println(message.toString());
+        network.Receive(message, gateway, this.MAC);
 
     }
-    
+
     @Override
-    public void ReturnError(int code){
+    public void ReturnError(int code) {
         super.ReturnError(code);
-        if(!sending){
+        if (!sending) {
             ResetErrorCode();
             Send(lastTTL *= 2);
         }
     }
+
     private void Send(int TTL) {
-        ICMP originalICMP = new ICMP(this.name, this.IP, lastArp.getDestName(), lastArp.getSourceIP(), TTL, lastMessage, MessageType.Request),
+        ICMP originalICMP = new ICMP(this.name, this.IP, destName, destIP, TTL, lastMessage == null? messageBuffer : lastMessage, type),
                 nextMessage = originalICMP,
                 messageToSend;
         sending = true;
@@ -111,41 +119,57 @@ public class Node extends IMessageManager {
             if (nextMessage.getData().length() > MTU) {
                 messageToSend.setData(nextMessage.getData().substring(0, MTU));
                 nextMessage.setData(nextMessage.getData().substring(MTU));
-            } 
-            
-            else {
+            } else {
                 nextMessage = null;
                 messageToSend.setFinal();
             }
-            network.Receive(messageToSend, lastArp.getSourceMAC(),this.MAC);
-            if (errorCode == -1)
+            network.Receive(messageToSend, lastSender, this.MAC);
+            if (errorCode == -1) {
                 break;
+            }
         }
         if (errorCode == -1) {
             ResetErrorCode();
             Send(lastTTL = TTL * 2);
-        }
-        else
+        } else {
             sending = false;
+        }
     }
 
     @Override
     protected void Receive(ARP message, String gatewayDefault, String sender) {
-        if (message.getMsgType() == MessageType.Reply){
-            lastArp = message;
+        if (message.getMsgType() == MessageType.Reply) {
+            destIP = message.getSourceIP();
+            destName = message.getSourceName();
+            lastSender = message.getSourceMAC();
             Send(lastTTL = DEFAULT_TTL);
-        }
-        else {
+        } else {
             ARP reply = message;
-            if(this.IP.equals(reply.getDestIP()))
+            if (this.IP.equals(reply.getDestIP())) {
                 reply.Reply(this.name, this.MAC);
-            else
+                System.out.println(reply.toString());
+            } else {
                 reply = null;
-            network.Receive(reply, gatewayDefault,this.MAC);
+            }
+            network.Receive(reply, gatewayDefault, this.MAC);
         }
     }
 
     @Override
     protected void Receive(ICMP message, String gatewayDefault, String sender) {
+        messageBuffer += message.getData();
+        message.setDestName(name);
+        System.out.println(message.toString());
+        if (message.isFinal()) {
+            message.setData(messageBuffer);
+            System.out.println(message.processOnNode(name));
+            
+            type = MessageType.Reply;
+            destName = message.getSourceName();
+            destIP = message.getSourceIP();
+            lastSender = sender;
+            if(message.getMsgType() == MessageType.Request)
+                Send(lastTTL = DEFAULT_TTL);
+        }
     }
 }

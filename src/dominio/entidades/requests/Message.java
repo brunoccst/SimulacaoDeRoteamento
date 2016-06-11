@@ -51,6 +51,14 @@ public class Message implements Cloneable {
     public String getDestName() {
         return destName;
     }
+    
+    public void setSourceName(String name) {
+        this.sourceName = name;
+    }
+    
+    public void setDestName(String name) {
+        this.destName = name;
+    }
 
     public Message Clone() {
         try {
