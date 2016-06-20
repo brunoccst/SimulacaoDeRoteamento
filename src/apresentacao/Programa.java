@@ -1,8 +1,6 @@
 package apresentacao;
 
-import dominio.entidades.Network;
-import dominio.entidades.Topology;
-import dominio.entidades.TopologyFactory;
+import dominio.entidades.*;
 import java.io.IOException;
 
 /**

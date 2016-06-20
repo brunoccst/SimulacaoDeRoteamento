@@ -143,7 +143,7 @@ public class Network extends IMessageManager {
             if (nodeAux != null) {
                 nodeAux.Receive(message, "", sender);
             } else {
-                portAux.getRouter().Receive(message, "", portAux.getPortNumber() + "");
+                portAux.getRouter().Receive(message, gatewayDefault, portAux.getPortNumber() + "");
             }
 
         } else {

@@ -21,6 +21,7 @@ public class Router extends IMessageManager {
     private LinkedList<ICMP> buffer;
     private Port portCache;
     private String lastSender;
+    private String lastMAC;
 
     public Router() {
         routerTable = new TreeMap<>();
@@ -79,7 +80,7 @@ public class Router extends IMessageManager {
             }
             nextMessage.setTTL(newTTL);
             nextMessage.setSourceName(name);
-            network.Receive(nextMessage, lastSender, GetPortToSend(nextMessage.getDestIP()).getMAC());
+            network.Receive(nextMessage, lastSender, GetPortToSend(nextMessage.getDestIP()) == null ?lastMAC : GetPortToSend(nextMessage.getDestIP()).getMAC());
 
             if (errorCode == -1) {
                 break;
@@ -132,6 +133,7 @@ public class Router extends IMessageManager {
                 Send();
                 return;
             }
+            lastMAC = defaultGateway;
             portCache = ports.get(sender);
             Port portAux = GetPortToSend(message.getDestIP());
             if (portAux == null) {
@@ -139,7 +141,7 @@ public class Router extends IMessageManager {
             } else {
                 ARP arpRequest = new ARP(this.name, portAux.getIP(), message.getDestIP(), MessageType.Request);
                 System.out.println(arpRequest.toString());
-                portAux.getNetwork().Receive(arpRequest, "", portAux.getMAC());
+                portAux.getNetwork().Receive(arpRequest, this.routerTable.get(TranslateIP(message.getDestIP())).getNext_hop(), portAux.getMAC());
             }
         }
     }
