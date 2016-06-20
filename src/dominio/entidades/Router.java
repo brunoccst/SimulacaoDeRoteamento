@@ -80,7 +80,12 @@ public class Router extends IMessageManager {
             }
             nextMessage.setTTL(newTTL);
             nextMessage.setSourceName(name);
-            network.Receive(nextMessage, lastSender, GetPortToSend(nextMessage.getDestIP()) == null ?lastMAC : GetPortToSend(nextMessage.getDestIP()).getMAC());
+            if(buffer.peek().getMsgType() == MessageType.Request){
+                network.Receive(nextMessage, lastSender, GetPortToSend(nextMessage.getDestIP()) == null ?lastMAC : GetPortToSend(nextMessage.getDestIP()).getMAC());
+            }
+            else{
+                network.Receive(nextMessage, lastSender, GetPortToSend(nextMessage.getDestIP()) == null || GetPortToSend(nextMessage.getDestIP()).getIP().equals("0.0.0.0")?lastMAC : GetPortToSend(nextMessage.getDestIP()).getMAC());
+            }
 
             if (errorCode == -1) {
                 break;
@@ -141,7 +146,11 @@ public class Router extends IMessageManager {
             } else {
                 ARP arpRequest = new ARP(this.name, portAux.getIP(), message.getDestIP(), MessageType.Request);
                 System.out.println(arpRequest.toString());
-                portAux.getNetwork().Receive(arpRequest, this.routerTable.get(TranslateIP(message.getDestIP())).getNext_hop(), portAux.getMAC());
+                RouterTableRow row = routerTable.get(TranslateIP(message.getDestIP()));
+                if (row == null) {
+                    row = routerTable.get("0.0.0.0");
+                }
+                portAux.getNetwork().Receive(arpRequest, row.getNext_hop(), portAux.getMAC());
             }
         }
     }
@@ -149,7 +158,9 @@ public class Router extends IMessageManager {
     protected Port GetPortToSend(String ip) {
         RouterTableRow row = routerTable.get(TranslateIP(ip));
         if (row == null) {
-            return null;
+            row = routerTable.get("0.0.0.0");
+            if(row == null)
+                return null;
         }
         return ports.get(""+row.getPort());
 
